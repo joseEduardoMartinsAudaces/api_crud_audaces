@@ -24,22 +24,20 @@ exports.getByEmail = async (req, res, next) => {
 exports.authenticateUser = async (req, res, next) => {
     try {
         const user = await repository.getByEmail(req.body.email);
-        if (!user || user.password !== md5(req.body.password + global.SALT_KEY)) {
-            res.status(201).send({
-                message: 'Usuário ou senha inválidos'
-            });
-            return;
-        }
+        if (!user || user.password !== md5(req.body.password + global.SALT_KEY))
+            return res.status(400).send({ message: 'Usuário ou senha inválidos' });
+        
+        if(!user.user_status)
+            return res.status(400).send({ message: 'Usuário ou senha inválidos' });
+
         const token = await authService.generateToken({
             id: user.user_id,
             email: user.email
         });
 
-        res.status(201).send({
-            token: token
-        });
+        res.status(201).send({ token: token });
     } catch (e) {
-        res.status(201).send({
+        res.status(404).send({
             message: 'Falha ao processar sua requisição'
         });
     }
