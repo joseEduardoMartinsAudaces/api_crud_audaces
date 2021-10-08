@@ -26,12 +26,17 @@ exports.getByEmail = async (req, res, next) => {
 // function to authenticate user and generete token to login
 exports.authenticateUser = async (req, res, next) => {
     try {
-        const user = await repository.getByEmail(req.body.email);
-        if (!user || user.password !== md5(req.body.password + global.SALT_KEY))
+        const {email, password} = req.body;
+        const user = await repository.getByEmail(email);
+
+        if (!user || user.password !== md5(password + global.SALT_KEY))
             return res.status(400).send({ message: 'Usuário ou senha inválidos' });
-        
-        if(!user.user_status)
-            return res.status(400).send({ message: 'Usuário ou senha inválidos' });
+
+        if(!user.user_status){
+            const link = "http://localhost:3000/user/register/authenticate?email=" + email;
+            emailService.submitEmail(email, "email confirmation", link);
+            return res.status(400).send({code: 10, message: 'Email não autenticado, por favor verificar seu email' });
+        }
 
         const token = await authService.generateToken({
             id: user.user_id,
@@ -40,9 +45,7 @@ exports.authenticateUser = async (req, res, next) => {
 
         res.status(200).send({ token: token });
     } catch (e) {
-        res.status(400).send({
-            message: 'Falha ao processar sua requisição'
-        });
+        res.status(400).send({ message: 'Falha ao processar sua requisição' });
     }
 };
 // funtion to create user and submit email for him
@@ -68,7 +71,7 @@ exports.createUser = async (req, res, next) => {
 
         emailService.submitEmail(email, "email confirmation", link);
 
-        res.status(200).send({"message": "usuario cadastrado com sucesso"});
+        res.status(200).send({"message": "Enviamos um email de confirmação para você"});
     } catch (error) {
         res.status(400).send({"code": 10, "message": "Erro ao cadastrar usuario!", "error": error});
     }
@@ -135,6 +138,10 @@ exports.resetPassword = async (req, res, next) => {
         if (!user)
             return res.status(400).send({message: 'Usuario invalido'});
         
+        if(!user.user_status)
+            await repository.updateUserStatus(email);
+
+        
         if (token !== user.token)
             return res.status(400).send({message: 'Codigo invalido'});
 
@@ -153,7 +160,7 @@ exports.resetPassword = async (req, res, next) => {
 exports.authenticateEmail = async (req, res, next) => {
     try {
         await repository.updateUserStatus(req.query.email)
-        res.redirect('http://127.0.0.1:5500/src/index.html')
+        res.redirect('http://127.0.0.1:5500/src/pages/examples/login.html')
     } catch (error) {
         res.status(400).send({message: 'Falha ao processar sua requisição', error});
     }
