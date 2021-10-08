@@ -11,6 +11,8 @@ const emailService = require('../services/email-service');
 const config = require("../config/config");
 
 //methods get
+// function to search user by email
+// disuse
 exports.getByEmail = async (req, res, next) => {
     try {
         const ret = await repository.getByEmail(req.body.email);
@@ -21,6 +23,7 @@ exports.getByEmail = async (req, res, next) => {
 };
 
 //methods post
+// function to authenticate user and generete token to login
 exports.authenticateUser = async (req, res, next) => {
     try {
         const user = await repository.getByEmail(req.body.email);
@@ -35,14 +38,14 @@ exports.authenticateUser = async (req, res, next) => {
             email: user.email
         });
 
-        res.status(201).send({ token: token });
+        res.status(200).send({ token: token });
     } catch (e) {
-        res.status(404).send({
+        res.status(400).send({
             message: 'Falha ao processar sua requisição'
         });
     }
 };
-
+// funtion to create user and submit email for him
 exports.createUser = async (req, res, next) => {
     const {namePeople, nameCompany, cpf, number, email, password, confirmPassword} = req.body;
     // data validation
@@ -65,12 +68,12 @@ exports.createUser = async (req, res, next) => {
 
         emailService.submitEmail(email, "email confirmation", link);
 
-        res.status(201).send({"message": "usuario cadastrado com sucesso"});
+        res.status(200).send({"message": "usuario cadastrado com sucesso"});
     } catch (error) {
-        res.status(404).send({"code": 10, "message": "Erro ao cadastrar usuario!", "error": error});
+        res.status(400).send({"code": 10, "message": "Erro ao cadastrar usuario!", "error": error});
     }
 };
-
+// function to validation token and refresh him
 exports.refreshToken = async (req, res, next) => {
     try {
         const token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -78,19 +81,15 @@ exports.refreshToken = async (req, res, next) => {
 
         const user = await repository.getById(data.id);
 
-        if (!user) {
-            res.status(404).send({
-                message: 'Cliente não encontrado'
-            });
-            return;
-        }
+        if (!user)
+            return res.status(400).send({ message: 'Cliente não encontrado' });
 
         const tokenData = await authService.generateToken({
             id: user.user_id,
             email: user.email
         });
 
-        res.status(201).send({
+        res.status(200).send({
             token: tokenData,
             data: {
                 namePeople: user.namePeople,
@@ -101,19 +100,17 @@ exports.refreshToken = async (req, res, next) => {
             }
         });
     } catch (e) {
-        res.status(500).send({
-            message: 'Falha ao processar sua requisição'
-        });
+        res.status(400).send({message: 'Falha ao processar sua requisição'});
     }
 };
-
+// function to email submit with token and validate email to reset password
 exports.forgotPassword = async (req, res, next) => {
     const email = req.body.email
     try {
         const user = await repository.getByEmail(email);
         
         if (!user) 
-            return res.status(400).send({ message: 'Email invalido' });
+            return res.status(400).send({message: 'Email invalido'});
 
         const token = crypto.randomBytes(20).toString('hex');
 
@@ -122,37 +119,37 @@ exports.forgotPassword = async (req, res, next) => {
 
         await repository.resetTokenExperes(user.user_id, token, now);
 
-        emailService.submitEmail(email, "reset password", token);
+        emailService.submitEmail(email, "Resetar senha", token);
 
         res.status(200).send({message: 'Email enviado'});
     } catch (error) {
         res.status(400).send({message: 'Falha ao processar sua requisição', error});
     }
 }
-
+// function to get token and check if user exists and verify if the tokens are the same
 exports.resetPassword = async (req, res, next) => {
     const {email, token, password} = req.body;
     try {
         const user = await repository.getByEmail(email);
 
         if (!user)
-            return res.status(400).send({message: 'User not found'});
+            return res.status(400).send({message: 'Usuario invalido'});
         
         if (token !== user.token)
-            return res.status(400).send({message: 'Token not found'});
+            return res.status(400).send({message: 'Codigo invalido'});
 
         const now = new Date();
         if (now > user.experesToken)
-            return res.status(400).send({message: 'Token expired, generate a new one'});
+            return res.status(400).send({message: 'Codigo expirado, gere outro'});
 
         await repository.updateUserResetPassword(user.user_id, md5(password + global.SALT_KEY), null, null);
 
-        res.status(200).send({message: 'Password reseted'});
+        res.status(200).send({message: 'Senha modificada'});
     } catch (error) {
         res.status(400).send({message: 'Falha ao processar sua requisição', error});
     }
 }
-
+// function to check if email exist and redirect for page login
 exports.authenticateEmail = async (req, res, next) => {
     try {
         await repository.updateUserStatus(req.query.email)
