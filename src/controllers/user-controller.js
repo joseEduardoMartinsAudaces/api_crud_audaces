@@ -71,9 +71,9 @@ exports.createUser = async (req, res, next) => {
 
         emailService.submitEmail(email, "email confirmation", link);
 
-        res.status(200).send({"message": "Enviamos um email de confirmação para você"});
+        res.status(200).send({ message: "Enviamos um email de confirmação para você" });
     } catch (error) {
-        res.status(400).send({"code": 10, "message": "Erro ao cadastrar usuario!", "error": error});
+        res.status(400).send({ code: 10, message: "Erro ao cadastrar usuario!", error: error});
     }
 };
 // function to validation token and refresh him
@@ -103,7 +103,7 @@ exports.refreshToken = async (req, res, next) => {
             }
         });
     } catch (e) {
-        res.status(400).send({message: 'Falha ao processar sua requisição'});
+        res.status(400).send({ message: 'Falha ao processar sua requisição' });
     }
 };
 // function to email submit with token and validate email to reset password
@@ -112,7 +112,7 @@ exports.forgotPassword = async (req, res, next) => {
     try {
         const user = await repository.getByEmail(email);
         
-        if (!user) 
+        if (!user)
             return res.status(400).send({message: 'Email invalido'});
 
         const token = crypto.randomBytes(20).toString('hex');
@@ -124,9 +124,9 @@ exports.forgotPassword = async (req, res, next) => {
 
         emailService.submitEmail(email, "Resetar senha", token);
 
-        res.status(200).send({message: 'Email enviado'});
+        res.status(200).send({ message: 'Email enviado' });
     } catch (error) {
-        res.status(400).send({message: 'Falha ao processar sua requisição', error});
+        res.status(400).send({ message: 'Falha ao processar sua requisição', error });
     }
 }
 // function to get token and check if user exists and verify if the tokens are the same
@@ -136,32 +136,32 @@ exports.resetPassword = async (req, res, next) => {
         const user = await repository.getByEmail(email);
 
         if (!user)
-            return res.status(400).send({message: 'Usuario invalido'});
+            return res.status(400).send({ message: 'Usuario invalido' });
         
         if(!user.user_status)
             await repository.updateUserStatus(email);
 
         
         if (token !== user.token)
-            return res.status(400).send({message: 'Codigo invalido'});
+            return res.status(400).send({ message: 'Codigo invalido' });
 
         const now = new Date();
         if (now > user.experesToken)
-            return res.status(400).send({message: 'Codigo expirado, gere outro'});
+            return res.status(400).send({ message: 'Codigo expirado, gere outro' });
 
         await repository.updateUserResetPassword(user.user_id, md5(password + global.SALT_KEY), null, null);
 
-        res.status(200).send({message: 'Senha modificada'});
+        res.status(200).send({ message: 'Senha modificada' });
     } catch (error) {
-        res.status(400).send({message: 'Falha ao processar sua requisição', error});
+        res.status(400).send({ message: 'Falha ao processar sua requisição', error });
     }
 }
 // function to check if email exist and redirect for page login
 exports.authenticateEmail = async (req, res, next) => {
     try {
         await repository.updateUserStatus(req.query.email)
-        res.redirect('http://127.0.0.1:5500/src/pages/examples/login.html')
+        res.redirect('http://127.0.0.1:5500/src/login.html')
     } catch (error) {
-        res.status(400).send({message: 'Falha ao processar sua requisição', error});
+        res.status(400).send({ message: 'Falha ao processar sua requisição', error });
     }
 }

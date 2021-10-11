@@ -66,7 +66,8 @@ module.exports = class User{
     //delete
     static deleteObj(id){
         return new Promise((resolve, reject) => {
-            db.query('DELETE FROM company WHERE companyid=' + id + ';',
+            db.query('DELETE FROM user WHERE user_id = ?',
+            [id],
             (err, result) => {
                 return err ? reject(err) : resolve(result.insertId);
             });

@@ -9,6 +9,7 @@ const app = express();
 //carrega as rotas
 const indexRoutes = require('./routes/index-route');
 const userRoutes = require('./routes/user-route');
+const customerRoutes = require('./routes/customer-route');
 
 app.use(bodyParser.json({
     limit: '5mb'
@@ -28,5 +29,6 @@ app.use((req, res, next) => {
 
 app.use('/', indexRoutes);
 app.use('/user', userRoutes);
+app.use('/customer', customerRoutes);
 
 module.exports = app;
