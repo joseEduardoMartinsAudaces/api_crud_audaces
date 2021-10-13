@@ -3,7 +3,7 @@
 const md5 = require('md5');
 const crypto = require('crypto');
 
-const repository = require('../repository/user');
+const repository = require('../repository/customer');
 const ValidationContract = require('../validators/validator');
 const authService = require('../services/auth-service');
 const emailService = require('../services/email-service');
@@ -24,9 +24,7 @@ exports.getAll = async (req, res, next) => {
 exports.createCustomer = async (req, res, next) => {
     try {
         const {user_id, name , cnpj, number} = req.body;
-        console.log("olamundo")
         const ret = await repository.createCustomer(user_id, name , cnpj, number);
-        console.log("olamundoooooooooooo")
         res.json({ data: ret });
     } catch (error) {
         res.status(400).send({ message: "Erro ao processar requisição!", error: error});
