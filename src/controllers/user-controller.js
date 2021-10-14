@@ -69,7 +69,7 @@ exports.createUser = async (req, res, next) => {
 
         const link = "http://localhost:3000/user/register/authenticate?email=" + email;
 
-        emailService.submitEmail(email, "email confirmation", link);
+        emailService.submitEmail(email, "email confirmation", token);
 
         res.status(200).send({ message: "Enviamos um email de confirmação para você" });
     } catch (error) {
@@ -159,8 +159,9 @@ exports.resetPassword = async (req, res, next) => {
 // function to check if email exist and redirect for page login
 exports.authenticateEmail = async (req, res, next) => {
     try {
-        await repository.updateUserStatus(req.query.email)
-        res.redirect('http://127.0.0.1:5500/src/login.html')
+        await repository.updateUserStatus(req.query.token);
+        console.log("ola mundo")
+        res.status(200).send({message:'deu tudo certo'})
     } catch (error) {
         res.status(400).send({ message: 'Falha ao processar sua requisição', error });
     }

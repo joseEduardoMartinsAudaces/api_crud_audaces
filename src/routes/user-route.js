@@ -10,6 +10,6 @@ router.post('/login', controller.authenticateUser);
 router.post('/login/forgotPassword', controller.forgotPassword);
 router.post('/login/resetPassword', controller.resetPassword);
 router.post('/register', controller.createUser);
-router.get('/register/authenticate', controller.authenticateEmail);
+router.post('/register/authenticate', controller.authenticateEmail);
 
 module.exports = router;
