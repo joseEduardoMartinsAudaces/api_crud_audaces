@@ -67,8 +67,6 @@ exports.createUser = async (req, res, next) => {
 
         const token = await authService.generateToken({ email });
 
-        const link = "http://localhost:3000/user/register/authenticate?email=" + email;
-
         emailService.submitEmail(email, "email confirmation", token);
 
         res.status(200).send({ message: "Enviamos um email de confirmação para você" });
@@ -159,9 +157,9 @@ exports.resetPassword = async (req, res, next) => {
 // function to check if email exist and redirect for page login
 exports.authenticateEmail = async (req, res, next) => {
     try {
-        await repository.updateUserStatus(req.query.token);
-        console.log("ola mundo")
-        res.status(200).send({message:'deu tudo certo'})
+        const token = await authService.decodeToken(req.query.token);
+        await repository.updateUserStatus(token.email);
+        res.status(200).send({message:'Email autenticado com sucesso!'})
     } catch (error) {
         res.status(400).send({ message: 'Falha ao processar sua requisição', error });
     }
