@@ -22,10 +22,22 @@ exports.getAll = async (req, res, next) => {
 
 //methods post
 exports.createCustomer = async (req, res, next) => {
+    const {corporateName , fantasyName, typeOfPerson, cnpjOrCpf, emails, phones, address} = req.body;
     try {
-        const {user_id, name , cnpj, number} = req.body;
-        const ret = await repository.createCustomer(user_id, name , cnpj, number);
-        res.json({ data: ret });
+        const token = req.body.token || req.query.token || req.headers['x-access-token'];
+        const data = await authService.decodeToken(token);
+        const customer_id = await repository.createCustomer(data.id, corporateName, fantasyName, typeOfPerson, cnpjOrCpf);
+        for(let i = 0; i < emails.length; i++){
+            await repository.createEmail(customer_id, emails[i]);
+        }
+        for(let i = 0; i < phones.length; i++){
+            await repository.createPhone(customer_id, phones[i]);
+        }
+        for(let i = 0; i < address.length; i++){
+            console.log(address[i])
+            await repository.createAddress(customer_id, address[i]);
+        }
+        res.status(200).send({ data: "Cadastro realizado com sucesso!" });
     } catch (error) {
         res.status(400).send({ message: "Erro ao processar requisição!", error: error});
     }

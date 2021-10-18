@@ -13,15 +13,43 @@ module.exports = class Customer{
         });
     }
     //insert
-    static createCustomer(user_id, name , cnpj, number) {
+    static createCustomer(user_id, corporateName, fantasyName, typeOfPerson, cnpjOrCpf) {
         return new Promise((resolve, reject) => {
-            db.query("INSERT INTO customer (user_id, name, cnpj, number) VALUES (?, ?, ?, ?);",
-            [user_id, name, cnpj, number],
+            db.query("INSERT INTO customer (user_id, corporateName, fantasyName, typeOfPerson, cnpjOrCpf) VALUES (?, ?, ?, ?, ?);",
+            [user_id, corporateName, fantasyName, typeOfPerson, cnpjOrCpf],
             (err, result) => {
                 return err ? reject(err) : resolve(result.insertId);
             });
         });
     }
+    static createEmail(customer_id, email) {
+        return new Promise((resolve, reject) => {
+            db.query("INSERT INTO email (customer_id, email) VALUES (?, ?);",
+            [customer_id, email],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+    static createPhone(customer_id, number) {
+        return new Promise((resolve, reject) => {
+            db.query("INSERT INTO phone (customer_id, number) VALUES (?, ?);",
+            [customer_id, number],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+    static createAddress(customer_id, address) {
+        return new Promise((resolve, reject) => {
+            db.query("INSERT INTO address (customer_id, typeAddress, municipality, country, zip, state, city, district, street, number, details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+            [customer_id, address.typeAddress, address.municipality, address.country, address.zip, address.state, address.city, address.district, address.street, address.number, address.details],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+
     //update
     static updateCustomer(customer){
         return new Promise((resolve, reject) => {
