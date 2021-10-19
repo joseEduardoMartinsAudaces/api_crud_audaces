@@ -51,6 +51,15 @@ module.exports = class Customer{
     }
 
     //update
+    static updateDeleteCustomer(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('UPDATE customer SET status = ? WHERE customer_id= ?',
+            [0, customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
     static updateCustomer(customer){
         return new Promise((resolve, reject) => {
             db.query('UPDATE customer SET name = ?, cnpj = ?, number = ? WHERE customer_id= ?',

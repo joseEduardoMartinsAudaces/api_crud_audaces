@@ -28,31 +28,41 @@ exports.createCustomer = async (req, res, next) => {
         const data = await authService.decodeToken(token);
 
         let contract = new ValidationContract();
-        contract.isCpfOrCnpj(customer.cnpjOrCpf, 'cpf invalido!');
-        contract.isPhoneNumber(customer.number, 'Numero de telefeone invalido!');
-        contract.isEmail(customer.email, 'email invalido!');
+        
+        for(let i = 0; i < phones.length; i++){
+            contract.isPhoneNumber(phones[i], 'Numero de telefeone invalido!');
+        }
+        for(let i = 0; i < emails.length; i++){
+            contract.isPhoneNumber(emails[i], 'Email invalido!');
+        }
+        contract.isCpfOrCnpj(customer.cnpjOrCpf, 'cpf ou cnpj invalido!');
+
         // if invalid data
         if (!contract.isValid())
-            return res.status(400).send({code: 20, message: contract.errors()}).end();
+            return res.status(400).send({message: contract.errors()}).end();
 
         const customer_id = await repository.createCustomer(data.id, customer);
 
-        console.log(customer, emails, phones, address)
         for(let i = 0; i < emails.length; i++){
             await repository.createEmail(customer_id, emails[i]);
         }
-        console.log("1")
         for(let i = 0; i < phones.length; i++){
-            const number = phones[i].replace(" ", "");
+            const number = phones[i].replace(" ", "").replace("(", "").replace(")", "").replace("-", "");
             await repository.createPhone(customer_id, number);
         }
-        console.log("2")
         for(let i = 0; i < address.length; i++){
             await repository.createAddress(customer_id, address[i]);
         }
-        console.log("3")
         res.status(200).send({ message: "Cadastro realizado com sucesso!" });
     } catch (error) {
         res.status(400).send({ message: "Erro ao processar requisição!", error: error});
     }
 };
+exports.updateDeleteCustomer = async (req, res, next) => {
+    try {
+        await repository.updateDeleteCustomer(req.body.customer_id);
+        res.status(200).send({ message: "Cadastro realizado com sucesso!" });
+    } catch (error) {
+        res.status(400).send({ message: "Erro ao processar requisição!", error: error});
+    }
+}

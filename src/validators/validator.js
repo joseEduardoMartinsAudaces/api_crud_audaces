@@ -58,7 +58,7 @@ ValidationContract.prototype.isEqualFields = (FirstValue, secondValue, message) 
 }
 
 ValidationContract.prototype.isPhoneNumber = (value, message) => {
-    const reg = new RegExp(/[0-9]{2} ?[0-9]{5}-?[0-9]{4}/);
+    const reg = new RegExp(/\d{2} ?(\d{5})|(\d{4})-?\d{4}/);
     if (!reg.test(value))
         errors.push(message);
 }
