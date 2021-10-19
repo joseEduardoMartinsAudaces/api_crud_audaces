@@ -13,10 +13,10 @@ module.exports = class Customer{
         });
     }
     //insert
-    static createCustomer(user_id, corporateName, fantasyName, typeOfPerson, cnpjOrCpf) {
+    static createCustomer(user_id, customer) {
         return new Promise((resolve, reject) => {
             db.query("INSERT INTO customer (user_id, corporateName, fantasyName, typeOfPerson, cnpjOrCpf) VALUES (?, ?, ?, ?, ?);",
-            [user_id, corporateName, fantasyName, typeOfPerson, cnpjOrCpf],
+            [user_id, customer.corporateName, customer.fantasyName, customer.typeOfPerson, customer.cnpjOrCpf],
             (err, result) => {
                 return err ? reject(err) : resolve(result.insertId);
             });

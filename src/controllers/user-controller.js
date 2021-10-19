@@ -33,8 +33,8 @@ exports.authenticateUser = async (req, res, next) => {
             return res.status(400).send({ message: 'Usuário ou senha inválidos' });
 
         if(!user.user_status){
-            const link = "http://localhost:3000/user/register/authenticate?email=" + email;
-            emailService.submitEmail(email, "email confirmation", link);
+            const token = await authService.generateToken({ email });
+            emailService.submitEmail(email, "email confirmation", token);
             return res.status(400).send({code: 10, message: 'Email não autenticado, por favor verificar seu email' });
         }
 
