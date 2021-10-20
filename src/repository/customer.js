@@ -12,6 +12,43 @@ module.exports = class Customer{
             });
         });
     }
+    static getCustomer(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('select * from customer where customer_id = ?',
+            [customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+    static getEmail(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('select email from email where customer_id = ?',
+            [customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+    static getPhone(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('select number from phone where customer_id = ?',
+            [customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+    static getAddress(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('select * from address where customer_id = ?',
+            [customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+
     //insert
     static createCustomer(user_id, customer) {
         return new Promise((resolve, reject) => {
@@ -51,15 +88,6 @@ module.exports = class Customer{
     }
 
     //update
-    static updateDeleteCustomer(customer_id){
-        return new Promise((resolve, reject) => {
-            db.query('UPDATE customer SET status = ? WHERE customer_id= ?',
-            [0, customer_id],
-            (err, result) => {
-                return err ? reject(err) : resolve(result);
-            });
-        });
-    }
     static updateCustomer(customer){
         return new Promise((resolve, reject) => {
             db.query('UPDATE customer SET name = ?, cnpj = ?, number = ? WHERE customer_id= ?',
@@ -69,14 +97,50 @@ module.exports = class Customer{
             });
         });
     }
+    static updateDeleteCustomer(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('UPDATE customer SET status = ? WHERE customer_id= ?',
+            [0, customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
 
     //delete
-    static deleteObj(id){
+    static deleteCustomer(customer_id){
         return new Promise((resolve, reject) => {
-            db.query('DELETE FROM customer WHERE companyid = ?',
-            [id],
+            db.query('DELETE FROM customer WHERE customer_id = ?',
+            [customer_id],
             (err, result) => {
-                return err ? reject(err) : resolve(result.insertId);
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+    static deleteEmail(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('DELETE FROM email WHERE customer_id = ?',
+            [customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+    static deletePhone(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('DELETE FROM phone WHERE customer_id = ?',
+            [customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
+            });
+        });
+    }
+    static deleteAddress(customer_id){
+        return new Promise((resolve, reject) => {
+            db.query('DELETE FROM address WHERE customer_id = ?',
+            [customer_id],
+            (err, result) => {
+                return err ? reject(err) : resolve(result);
             });
         });
     }
