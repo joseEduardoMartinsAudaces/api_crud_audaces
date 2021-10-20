@@ -59,11 +59,14 @@ exports.create = async (req, res, next) => {
         for(let i = 0; i < emails.length; i++){
             await repository.createEmail(customer_id, emails[i]);
         }
+        
         for(let i = 0; i < phones.length; i++){
             const number = phones[i].replace(" ", "").replace("(", "").replace(")", "").replace("-", "");
             await repository.createPhone(customer_id, number);
         }
+        
         for(let i = 0; i < address.length; i++){
+            console.log(address[i])
             await repository.createAddress(customer_id, address[i]);
         }
         res.status(200).send({ message: "Cadastro realizado com sucesso!" });
