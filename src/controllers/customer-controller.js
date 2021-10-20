@@ -19,6 +19,7 @@ exports.getAll = async (req, res, next) => {
         res.json({ mensagem: error });
     }
 };
+
 exports.getById = async (req, res, next) => {
     try {
         const {customer_id} = req.query;
@@ -48,6 +49,7 @@ exports.create = async (req, res, next) => {
         for(let i = 0; i < emails.length; i++){
             contract.isEmail(emails[i], 'Email invalido!');
         }
+
         contract.isCpfOrCnpj(customer.cnpjOrCpf, 'cpf ou cnpj invalido!');
 
         // if invalid data
@@ -66,7 +68,6 @@ exports.create = async (req, res, next) => {
         }
         
         for(let i = 0; i < address.length; i++){
-            console.log(address[i])
             await repository.createAddress(customer_id, address[i]);
         }
         res.status(200).send({ message: "Cadastro realizado com sucesso!" });
@@ -75,6 +76,7 @@ exports.create = async (req, res, next) => {
     }
 };
 
+//methods delete
 exports.delete = async (req, res, next) => {
     const {customer_id} = req.body;
     try {
