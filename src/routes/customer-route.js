@@ -8,6 +8,7 @@ const authService = require('../services/auth-service');
 router.get('/getAll', controller.getAll);
 router.get('/get', controller.getById);
 router.post('/create', authService.authorize, controller.create);
+router.post('/update', authService.authorize, controller.update);
 router.delete('/delete', authService.authorize, controller.delete);
 
 module.exports = router;

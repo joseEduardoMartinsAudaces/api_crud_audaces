@@ -76,6 +76,19 @@ exports.create = async (req, res, next) => {
     }
 };
 
+//methods put
+exports.update = async (req, res, next) => {
+    const {customer, emails, phones, address} = req.body;
+    console.log(customer);
+    try {
+        const customer_id = await repository.updateCustomer(customer)
+        console.log(customer_id);
+        res.status(200).send({ message: "Cliente removido com sucesso!" });
+    } catch (error) {
+        res.status(400).send({ message: "Erro ao processar requisição!", error: error});
+    }
+}
+
 //methods delete
 exports.delete = async (req, res, next) => {
     const {customer_id} = req.body;

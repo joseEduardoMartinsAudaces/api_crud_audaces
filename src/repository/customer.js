@@ -90,8 +90,8 @@ module.exports = class Customer{
     //update
     static updateCustomer(customer){
         return new Promise((resolve, reject) => {
-            db.query('UPDATE customer SET name = ?, cnpj = ?, number = ? WHERE customer_id= ?',
-            [customer.customer_id, customer.name, customer.cnpj, customer.number],
+            db.query('UPDATE customer SET corporateName = ?, fantasyName = ?, typeOfPerson = ?, cnpjOrCpf = ? WHERE customer_id= ?',
+            [customer.corporateName, customer.fantasyName, customer.typeOfPerson, customer.cnpjOrCpf, customer.customer_id],
             (err, result) => {
                 return err ? reject(err) : resolve(result);
             });
