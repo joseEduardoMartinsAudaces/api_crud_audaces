@@ -49,7 +49,6 @@ exports.create = async (req, res, next) => {
         for(let i = 0; i < emails.length; i++){
             contract.isEmail(emails[i], 'Email invalido!');
         }
-
         contract.isCpfOrCnpj(customer.cnpjOrCpf, 'cpf ou cnpj invalido!');
 
         // if invalid data
@@ -61,7 +60,7 @@ exports.create = async (req, res, next) => {
         for(let i = 0; i < emails.length; i++){
             await repository.createEmail(customer_id, emails[i]);
         }
-        
+
         for(let i = 0; i < phones.length; i++){
             const number = phones[i].replace(" ", "").replace("(", "").replace(")", "").replace("-", "");
             await repository.createPhone(customer_id, number);
@@ -70,6 +69,7 @@ exports.create = async (req, res, next) => {
         for(let i = 0; i < address.length; i++){
             await repository.createAddress(customer_id, address[i]);
         }
+
         res.status(200).send({ message: "Cadastro realizado com sucesso!" });
     } catch (error) {
         res.status(400).send({ message: "Erro ao processar requisição!", error: error});
@@ -79,11 +79,41 @@ exports.create = async (req, res, next) => {
 //methods put
 exports.update = async (req, res, next) => {
     const {customer, emails, phones, address} = req.body;
-    console.log(customer);
     try {
-        const customer_id = await repository.updateCustomer(customer)
-        console.log(customer_id);
-        res.status(200).send({ message: "Cliente removido com sucesso!" });
+        let contract = new ValidationContract();
+        
+        for(let i = 0; i < phones.length; i++){
+            contract.isPhoneNumber(phones[i], 'Numero de telefeone invalido!');
+        }
+        for(let i = 0; i < emails.length; i++){
+            contract.isEmail(emails[i], 'Email invalido!');
+        }
+
+        contract.isCpfOrCnpj(customer.cnpjOrCpf, 'cpf ou cnpj invalido!');
+
+        // if invalid data
+        if (!contract.isValid())
+            return res.status(400).send({message: contract.errors()}).end();
+
+        await repository.updateCustomer(customer);
+
+        await repository.deleteEmail(customer.customer_id);
+        for(let i = 0; i < emails.length; i++){
+            await repository.createEmail(customer.customer_id, emails[i]);
+        }
+        
+        await repository.deletePhone(customer.customer_id);
+        for(let i = 0; i < phones.length; i++){
+            const number = phones[i].replace(" ", "").replace("(", "").replace(")", "").replace("-", "");
+            await repository.createPhone(customer.customer_id, number);
+        }
+
+        await repository.deleteAddress(customer.customer_id);
+        for(let i = 0; i < address.length; i++){
+            await repository.createAddress(customer.customer_id, address[i]);
+        }
+        
+        res.status(200).send({ message: "Cliente editado com sucesso!" });
     } catch (error) {
         res.status(400).send({ message: "Erro ao processar requisição!", error: error});
     }

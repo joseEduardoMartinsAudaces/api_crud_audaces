@@ -12,6 +12,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static getCustomer(customer_id){
         return new Promise((resolve, reject) => {
             db.query('select * from customer where customer_id = ?',
@@ -21,6 +22,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static getEmail(customer_id){
         return new Promise((resolve, reject) => {
             db.query('select email from email where customer_id = ?',
@@ -30,6 +32,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static getPhone(customer_id){
         return new Promise((resolve, reject) => {
             db.query('select number from phone where customer_id = ?',
@@ -39,6 +42,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static getAddress(customer_id){
         return new Promise((resolve, reject) => {
             db.query('select * from address where customer_id = ?',
@@ -59,6 +63,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static createEmail(customer_id, email) {
         return new Promise((resolve, reject) => {
             db.query("INSERT INTO email (customer_id, email) VALUES (?, ?);",
@@ -68,6 +73,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static createPhone(customer_id, number) {
         return new Promise((resolve, reject) => {
             db.query("INSERT INTO phone (customer_id, number) VALUES (?, ?);",
@@ -77,6 +83,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static createAddress(customer_id, address) {
         return new Promise((resolve, reject) => {
             db.query("INSERT INTO address (customer_id, typeAddress, municipality, country, zip, state, city, district, street, number, details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
@@ -97,6 +104,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static updateDeleteCustomer(customer_id){
         return new Promise((resolve, reject) => {
             db.query('UPDATE customer SET status = ? WHERE customer_id= ?',
@@ -117,6 +125,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static deleteEmail(customer_id){
         return new Promise((resolve, reject) => {
             db.query('DELETE FROM email WHERE customer_id = ?',
@@ -126,6 +135,7 @@ module.exports = class Customer{
             });
         });
     }
+
     static deletePhone(customer_id){
         return new Promise((resolve, reject) => {
             db.query('DELETE FROM phone WHERE customer_id = ?',
@@ -135,6 +145,7 @@ module.exports = class Customer{
             });
         });
     }
+    
     static deleteAddress(customer_id){
         return new Promise((resolve, reject) => {
             db.query('DELETE FROM address WHERE customer_id = ?',
